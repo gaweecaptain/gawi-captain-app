@@ -1,111 +1,260 @@
 <!DOCTYPE html>
-
-<html>
-
+<html lang="ko">
 <head>
-
 <meta charset="UTF-8">
-
-<title>가위캡틴 영업관리</title>
+<title>가위캡틴 CRM</title>
 
 <style>
+body{
+  font-family:Arial;
+  padding:20px;
+  background:#f5f5f5;
+}
 
-body { font-family: Arial; padding:20px; }
+h1{
+  margin-bottom:20px;
+}
 
-input, button { margin:5px; padding:10px; }
+input, textarea, button{
+  padding:10px;
+  margin:5px;
+  border-radius:8px;
+  border:1px solid #ccc;
+}
 
-table { border-collapse: collapse; width:100%; margin-top:20px;}
+.card{
+  background:white;
+  padding:15px;
+  margin-top:15px;
+  border-radius:12px;
+  box-shadow:0 2px 5px rgba(0,0,0,0.1);
+}
 
-td, th { border:1px solid #ddd; padding:8px;}
+.top{
+  display:flex;
+  flex-wrap:wrap;
+}
 
+.memo{
+  width:100%;
+  height:70px;
+}
+
+button{
+  cursor:pointer;
+}
+
+.search{
+  width:300px;
+}
 </style>
-
 </head>
 
 <body>
 
-<h2>가위캡틴 영업관리</h2>
+<h1>가위캡틴 CRM</h1>
 
-<input id="name" placeholder="고객명">
+<input type="date" id="visitDate">
 
-<input id="product" placeholder="제품명">
+<input type="text" id="name" placeholder="고객명">
 
-<input id="amount" type="number" placeholder="금액">
+<input type="text" id="shop" placeholder="매장명">
 
-<button onclick="addData()">추가</button>
+<input type="text" id="phone" placeholder="전화번호">
 
-<table>
+<input type="text" id="product" placeholder="제품">
 
-<thead>
+<input type="number" id="consumerPrice" placeholder="소비자가">
 
-<tr><th>고객명</th><th>제품</th><th>금액</th><th>삭제</th></tr>
+<input type="number" id="sellPrice" placeholder="실판매가">
 
-</thead>
+<textarea id="memo" class="memo" placeholder="메모 / 수리 / 결제방식"></textarea>
 
-<tbody id="list"></tbody>
+<br>
 
-</table>
+<button onclick="saveCustomer()">저장</button>
+
+<hr>
+
+<input
+type="text"
+id="search"
+class="search"
+placeholder="고객명 / 매장명 / 전화번호 검색"
+onkeyup="render()"
+>
+
+<div id="customerList"></div>
 
 <script>
 
-let data = JSON.parse(localStorage.getItem("sales")||"[]");
+let customers =
+JSON.parse(localStorage.getItem("customers") || "[]");
 
-function save(){
+let editIndex = -1;
 
-  localStorage.setItem("sales", JSON.stringify(data));
+function saveCustomer(){
+
+  const customer = {
+    visitDate:
+      document.getElementById("visitDate").value,
+
+    name:
+      document.getElementById("name").value,
+
+    shop:
+      document.getElementById("shop").value,
+
+    phone:
+      document.getElementById("phone").value,
+
+    product:
+      document.getElementById("product").value,
+
+    consumerPrice:
+      document.getElementById("consumerPrice").value,
+
+    sellPrice:
+      document.getElementById("sellPrice").value,
+
+    margin:
+      document.getElementById("sellPrice").value -
+      document.getElementById("consumerPrice").value,
+
+    memo:
+      document.getElementById("memo").value
+  };
+
+  if(editIndex === -1){
+    customers.push(customer);
+  }else{
+    customers[editIndex] = customer;
+    editIndex = -1;
+  }
+
+  localStorage.setItem(
+    "customers",
+    JSON.stringify(customers)
+  );
+
+  clearForm();
 
   render();
-
 }
 
-function addData(){
+function clearForm(){
 
-  const name=document.getElementById("name").value;
-
-  const product=document.getElementById("product").value;
-
-  const amount=document.getElementById("amount").value;
-
-  if(!name || !product || !amount) return;
-
-  data.push({name, product, amount});
-
-  save();
-
-}
-
-function del(i){
-
-  data.splice(i,1);
-
-  save();
-
+  document.getElementById("visitDate").value = "";
+  document.getElementById("name").value = "";
+  document.getElementById("shop").value = "";
+  document.getElementById("phone").value = "";
+  document.getElementById("product").value = "";
+  document.getElementById("consumerPrice").value = "";
+  document.getElementById("sellPrice").value = "";
+  document.getElementById("memo").value = "";
 }
 
 function render(){
 
-  const list=document.getElementById("list");
+  const keyword =
+    document.getElementById("search")
+    .value
+    .toLowerCase();
 
-  list.innerHTML="";
+  const list =
+    document.getElementById("customerList");
 
-  data.forEach((d,i)=>{
+  list.innerHTML = "";
 
-    list.innerHTML+=`
+  customers.forEach((c, i)=>{
 
-    <tr>
+    const text =
+      (
+        c.name +
+        c.shop +
+        c.phone
+      ).toLowerCase();
 
-      <td>${d.name}</td>
+    if(!text.includes(keyword)) return;
 
-      <td>${d.product}</td>
+    list.innerHTML += `
+    <div class="card">
 
-      <td>${d.amount}</td>
+      <b>${c.visitDate}</b>
 
-      <td><button onclick="del(${i})">삭제</button></td>
+      <h3>${c.name}</h3>
 
-    </tr>`;
+      <p>매장명 : ${c.shop}</p>
 
+      <p>전화번호 : ${c.phone}</p>
+
+      <p>제품 : ${c.product}</p>
+
+      <p>소비자가 : ${c.consumerPrice}</p>
+
+      <p>실판매가 : ${c.sellPrice}</p>
+
+      <p>마진 : ${c.margin}</p>
+
+      <p>메모 : ${c.memo}</p>
+
+      <button onclick="editCustomer(${i})">
+      수정
+      </button>
+
+      <button onclick="deleteCustomer(${i})">
+      삭제
+      </button>
+
+    </div>
+    `;
   });
+}
 
+function editCustomer(i){
+
+  const c = customers[i];
+
+  document.getElementById("visitDate").value =
+    c.visitDate;
+
+  document.getElementById("name").value =
+    c.name;
+
+  document.getElementById("shop").value =
+    c.shop;
+
+  document.getElementById("phone").value =
+    c.phone;
+
+  document.getElementById("product").value =
+    c.product;
+
+  document.getElementById("consumerPrice").value =
+    c.consumerPrice;
+
+  document.getElementById("sellPrice").value =
+    c.sellPrice;
+
+  document.getElementById("memo").value =
+    c.memo;
+
+  editIndex = i;
+}
+
+function deleteCustomer(i){
+
+  if(confirm("삭제할까요?")){
+
+    customers.splice(i,1);
+
+    localStorage.setItem(
+      "customers",
+      JSON.stringify(customers)
+    );
+
+    render();
+  }
 }
 
 render();
@@ -113,5 +262,4 @@ render();
 </script>
 
 </body>
-
 </html>
