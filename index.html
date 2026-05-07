@@ -2,59 +2,185 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<title>가위캡틴 CRM</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>가위캡틴 CRM PRO</title>
 
 <style>
+
 body{
+  margin:0;
   font-family:Arial;
+  background:#f4f6f9;
+  color:#222;
+}
+
+header{
+  background:#111827;
+  color:white;
   padding:20px;
-  background:#f5f5f5;
+  font-size:24px;
+  font-weight:bold;
 }
 
-h1{
-  margin-bottom:20px;
+.container{
+  padding:20px;
 }
 
-input, textarea, button{
-  padding:10px;
-  margin:5px;
-  border-radius:8px;
-  border:1px solid #ccc;
-}
-
-.card{
+.section{
   background:white;
-  padding:15px;
-  margin-top:15px;
-  border-radius:12px;
-  box-shadow:0 2px 5px rgba(0,0,0,0.1);
+  border-radius:20px;
+  padding:20px;
+  margin-bottom:20px;
+  box-shadow:0 2px 10px rgba(0,0,0,0.08);
 }
 
-.top{
-  display:flex;
-  flex-wrap:wrap;
+h2{
+  margin-top:0;
 }
 
-.memo{
+.calendar{
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  gap:10px;
+}
+
+.day{
+  background:#fafafa;
+  min-height:110px;
+  border-radius:15px;
+  padding:8px;
+  font-size:13px;
+  position:relative;
+  border:1px solid #eee;
+}
+
+.dayNumber{
+  font-weight:bold;
+  margin-bottom:5px;
+}
+
+.today{
+  border:2px solid #2563eb;
+}
+
+.event{
+  background:#dbeafe;
+  border-radius:8px;
+  padding:3px 5px;
+  margin-top:4px;
+  font-size:11px;
+}
+
+input, textarea{
   width:100%;
-  height:70px;
+  padding:12px;
+  margin-top:10px;
+  border-radius:12px;
+  border:1px solid #ddd;
+  box-sizing:border-box;
 }
 
 button{
+  background:#2563eb;
+  color:white;
+  border:none;
+  padding:12px 18px;
+  border-radius:12px;
+  margin-top:15px;
   cursor:pointer;
+  font-weight:bold;
+}
+
+button:hover{
+  opacity:0.9;
+}
+
+.card{
+  border:1px solid #eee;
+  border-radius:15px;
+  padding:15px;
+  margin-top:15px;
+  background:#fafafa;
+}
+
+.topInfo{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.small{
+  font-size:13px;
+  color:#666;
+}
+
+.price{
+  margin-top:10px;
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:10px;
+}
+
+.memo{
+  margin-top:10px;
+  background:white;
+  padding:10px;
+  border-radius:10px;
 }
 
 .search{
-  width:300px;
+  margin-bottom:15px;
 }
+
+.actions{
+  margin-top:10px;
+}
+
+.deleteBtn{
+  background:#dc2626;
+}
+
+.editBtn{
+  background:#059669;
+}
+
+@media(max-width:700px){
+
+  .calendar{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .price{
+    grid-template-columns:1fr;
+  }
+
+}
+
 </style>
 </head>
 
 <body>
 
-<h1>가위캡틴 CRM</h1>
+<header>
+가위캡틴 CRM PRO
+</header>
 
-<input type="date" id="visitDate">
+<div class="container">
+
+<div class="section">
+
+<h2>📅 월 캘린더</h2>
+
+<div id="calendar" class="calendar"></div>
+
+</div>
+
+<div class="section">
+
+<h2>📝 고객 / 판매 등록</h2>
+
+<input type="date" id="saleDate">
 
 <input type="text" id="name" placeholder="고객명">
 
@@ -62,19 +188,35 @@ button{
 
 <input type="text" id="phone" placeholder="전화번호">
 
-<input type="text" id="product" placeholder="제품">
+<input type="text" id="product" placeholder="제품명">
+
+<div class="price">
 
 <input type="number" id="consumerPrice" placeholder="소비자가">
 
 <input type="number" id="sellPrice" placeholder="실판매가">
 
-<textarea id="memo" class="memo" placeholder="메모 / 수리 / 결제방식"></textarea>
+<input type="number" id="costPrice" placeholder="원가">
 
-<br>
+<input type="number" id="margin" placeholder="마진" readonly>
 
-<button onclick="saveCustomer()">저장</button>
+</div>
 
-<hr>
+<textarea
+id="memo"
+rows="4"
+placeholder="메모 / 결제방식 / 수리요청 / 특이사항">
+</textarea>
+
+<button onclick="saveCustomer()">
+저장하기
+</button>
+
+</div>
+
+<div class="section">
+
+<h2>🔍 고객 검색</h2>
 
 <input
 type="text"
@@ -86,6 +228,10 @@ onkeyup="render()"
 
 <div id="customerList"></div>
 
+</div>
+
+</div>
+
 <script>
 
 let customers =
@@ -93,11 +239,36 @@ JSON.parse(localStorage.getItem("customers") || "[]");
 
 let editIndex = -1;
 
+document
+.getElementById("sellPrice")
+.addEventListener("input", calcMargin);
+
+document
+.getElementById("costPrice")
+.addEventListener("input", calcMargin);
+
+function calcMargin(){
+
+  const sell =
+    Number(
+      document.getElementById("sellPrice").value
+    );
+
+  const cost =
+    Number(
+      document.getElementById("costPrice").value
+    );
+
+  document.getElementById("margin").value =
+    sell - cost;
+}
+
 function saveCustomer(){
 
   const customer = {
-    visitDate:
-      document.getElementById("visitDate").value,
+
+    saleDate:
+      document.getElementById("saleDate").value,
 
     name:
       document.getElementById("name").value,
@@ -117,18 +288,24 @@ function saveCustomer(){
     sellPrice:
       document.getElementById("sellPrice").value,
 
+    costPrice:
+      document.getElementById("costPrice").value,
+
     margin:
-      document.getElementById("sellPrice").value -
-      document.getElementById("consumerPrice").value,
+      document.getElementById("margin").value,
 
     memo:
       document.getElementById("memo").value
   };
 
   if(editIndex === -1){
+
     customers.push(customer);
+
   }else{
+
     customers[editIndex] = customer;
+
     editIndex = -1;
   }
 
@@ -140,17 +317,21 @@ function saveCustomer(){
   clearForm();
 
   render();
+
+  createCalendar();
 }
 
 function clearForm(){
 
-  document.getElementById("visitDate").value = "";
+  document.getElementById("saleDate").value = "";
   document.getElementById("name").value = "";
   document.getElementById("shop").value = "";
   document.getElementById("phone").value = "";
   document.getElementById("product").value = "";
   document.getElementById("consumerPrice").value = "";
   document.getElementById("sellPrice").value = "";
+  document.getElementById("costPrice").value = "";
+  document.getElementById("margin").value = "";
   document.getElementById("memo").value = "";
 }
 
@@ -168,43 +349,82 @@ function render(){
 
   customers.forEach((c, i)=>{
 
-    const text =
+    const target =
       (
         c.name +
         c.shop +
         c.phone
       ).toLowerCase();
 
-    if(!text.includes(keyword)) return;
+    if(!target.includes(keyword)) return;
 
     list.innerHTML += `
+
     <div class="card">
 
-      <b>${c.visitDate}</b>
+      <div class="topInfo">
 
-      <h3>${c.name}</h3>
+        <div>
 
-      <p>매장명 : ${c.shop}</p>
+          <h3>${c.name}</h3>
 
-      <p>전화번호 : ${c.phone}</p>
+          <div class="small">
+          ${c.saleDate}
+          </div>
 
-      <p>제품 : ${c.product}</p>
+        </div>
 
-      <p>소비자가 : ${c.consumerPrice}</p>
+      </div>
 
-      <p>실판매가 : ${c.sellPrice}</p>
+      <p><b>매장명</b> : ${c.shop}</p>
 
-      <p>마진 : ${c.margin}</p>
+      <p><b>전화번호</b> : ${c.phone}</p>
 
-      <p>메모 : ${c.memo}</p>
+      <p><b>제품</b> : ${c.product}</p>
 
-      <button onclick="editCustomer(${i})">
-      수정
-      </button>
+      <div class="price">
 
-      <button onclick="deleteCustomer(${i})">
-      삭제
-      </button>
+        <div>
+        소비자가<br>
+        <b>${c.consumerPrice}</b>
+        </div>
+
+        <div>
+        실판매가<br>
+        <b>${c.sellPrice}</b>
+        </div>
+
+        <div>
+        원가<br>
+        <b>${c.costPrice}</b>
+        </div>
+
+        <div>
+        마진<br>
+        <b>${c.margin}</b>
+        </div>
+
+      </div>
+
+      <div class="memo">
+      ${c.memo}
+      </div>
+
+      <div class="actions">
+
+        <button
+        class="editBtn"
+        onclick="editCustomer(${i})">
+        수정
+        </button>
+
+        <button
+        class="deleteBtn"
+        onclick="deleteCustomer(${i})">
+        삭제
+        </button>
+
+      </div>
 
     </div>
     `;
@@ -215,8 +435,8 @@ function editCustomer(i){
 
   const c = customers[i];
 
-  document.getElementById("visitDate").value =
-    c.visitDate;
+  document.getElementById("saleDate").value =
+    c.saleDate;
 
   document.getElementById("name").value =
     c.name;
@@ -236,6 +456,12 @@ function editCustomer(i){
   document.getElementById("sellPrice").value =
     c.sellPrice;
 
+  document.getElementById("costPrice").value =
+    c.costPrice;
+
+  document.getElementById("margin").value =
+    c.margin;
+
   document.getElementById("memo").value =
     c.memo;
 
@@ -254,10 +480,72 @@ function deleteCustomer(i){
     );
 
     render();
+
+    createCalendar();
+  }
+}
+
+function createCalendar(){
+
+  const calendar =
+    document.getElementById("calendar");
+
+  calendar.innerHTML = "";
+
+  const now = new Date();
+
+  const year = now.getFullYear();
+
+  const month = now.getMonth();
+
+  const lastDay =
+    new Date(year, month + 1, 0).getDate();
+
+  const today =
+    now.getDate();
+
+  for(let i=1; i<=lastDay; i++){
+
+    let events = "";
+
+    customers.forEach(c=>{
+
+      if(!c.saleDate) return;
+
+      const d =
+        new Date(c.saleDate);
+
+      if(d.getDate() === i &&
+         d.getMonth() === month){
+
+        events += `
+        <div class="event">
+        ${c.name}
+        </div>
+        `;
+      }
+
+    });
+
+    calendar.innerHTML += `
+
+    <div class="day
+    ${today === i ? 'today' : ''}">
+
+      <div class="dayNumber">
+      ${i}
+      </div>
+
+      ${events}
+
+    </div>
+    `;
   }
 }
 
 render();
+
+createCalendar();
 
 </script>
 
