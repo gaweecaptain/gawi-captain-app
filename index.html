@@ -4,155 +4,202 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>가위캡틴 CRM PRO</title>
+<title>가위캡틴 캘린더</title>
 
 <style>
 
+*{
+  box-sizing:border-box;
+}
+
 body{
   margin:0;
-  font-family:Arial;
-  background:#f4f6f9;
-  color:#222;
-}
-
-header{
-  background:#111827;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  background:url('https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?q=80&w=2070&auto=format&fit=crop') center/cover no-repeat fixed;
+  min-height:100vh;
+  padding:30px;
   color:white;
-  padding:20px;
-  font-size:24px;
-  font-weight:bold;
 }
 
-.container{
-  padding:20px;
+.wrapper{
+  max-width:900px;
+  margin:auto;
 }
 
-.section{
-  background:white;
-  border-radius:20px;
-  padding:20px;
+.calendarBox{
+
+  backdrop-filter:blur(20px);
+
+  background:rgba(15,23,42,0.55);
+
+  border:1px solid rgba(255,255,255,0.15);
+
+  border-radius:35px;
+
+  padding:25px;
+
+  box-shadow:
+  0 8px 30px rgba(0,0,0,0.35);
+}
+
+.topBar{
+
+  display:flex;
+
+  justify-content:space-between;
+
+  align-items:center;
+
   margin-bottom:20px;
-  box-shadow:0 2px 10px rgba(0,0,0,0.08);
 }
 
-h2{
-  margin-top:0;
+.monthTitle{
+
+  font-size:36px;
+
+  font-weight:700;
+
+  letter-spacing:-1px;
+}
+
+.menuBtns{
+
+  display:flex;
+
+  gap:10px;
+}
+
+.menuBtns button{
+
+  background:rgba(255,255,255,0.15);
+
+  border:none;
+
+  color:white;
+
+  padding:10px 15px;
+
+  border-radius:15px;
+
+  cursor:pointer;
+
+  font-weight:600;
+}
+
+.menuBtns button:hover{
+
+  background:rgba(255,255,255,0.25);
+}
+
+.weekNames{
+
+  display:grid;
+
+  grid-template-columns:repeat(7,1fr);
+
+  margin-bottom:10px;
+
+  opacity:0.8;
+
+  text-align:center;
+
+  font-weight:600;
 }
 
 .calendar{
+
   display:grid;
+
   grid-template-columns:repeat(7,1fr);
+
   gap:10px;
 }
 
 .day{
-  background:#fafafa;
-  min-height:110px;
-  border-radius:15px;
-  padding:8px;
-  font-size:13px;
+
+  min-height:120px;
+
+  padding:10px;
+
+  border-radius:20px;
+
+  background:rgba(255,255,255,0.05);
+
   position:relative;
-  border:1px solid #eee;
+
+  transition:0.2s;
+}
+
+.day:hover{
+
+  transform:translateY(-3px);
+
+  background:rgba(255,255,255,0.08);
 }
 
 .dayNumber{
-  font-weight:bold;
-  margin-bottom:5px;
+
+  font-size:18px;
+
+  font-weight:700;
+
+  margin-bottom:8px;
 }
 
 .today{
-  border:2px solid #2563eb;
+
+  border:2px solid white;
+}
+
+.sunday .dayNumber{
+
+  color:#ff8a8a;
+}
+
+.saturday .dayNumber{
+
+  color:#8ab4ff;
 }
 
 .event{
-  background:#dbeafe;
-  border-radius:8px;
-  padding:3px 5px;
-  margin-top:4px;
-  font-size:11px;
-}
 
-input, textarea{
-  width:100%;
-  padding:12px;
-  margin-top:10px;
-  border-radius:12px;
-  border:1px solid #ddd;
-  box-sizing:border-box;
-}
+  background:rgba(255,255,255,0.18);
 
-button{
-  background:#2563eb;
-  color:white;
-  border:none;
-  padding:12px 18px;
-  border-radius:12px;
-  margin-top:15px;
-  cursor:pointer;
-  font-weight:bold;
-}
-
-button:hover{
-  opacity:0.9;
-}
-
-.card{
-  border:1px solid #eee;
-  border-radius:15px;
-  padding:15px;
-  margin-top:15px;
-  background:#fafafa;
-}
-
-.topInfo{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
-
-.small{
-  font-size:13px;
-  color:#666;
-}
-
-.price{
-  margin-top:10px;
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:10px;
-}
-
-.memo{
-  margin-top:10px;
-  background:white;
-  padding:10px;
   border-radius:10px;
+
+  padding:4px 7px;
+
+  margin-top:5px;
+
+  font-size:12px;
+
+  white-space:nowrap;
+
+  overflow:hidden;
+
+  text-overflow:ellipsis;
 }
 
-.search{
-  margin-bottom:15px;
-}
+.holiday{
 
-.actions{
-  margin-top:10px;
-}
-
-.deleteBtn{
-  background:#dc2626;
-}
-
-.editBtn{
-  background:#059669;
+  background:#ff6b6b;
 }
 
 @media(max-width:700px){
 
   .calendar{
+
     grid-template-columns:repeat(2,1fr);
   }
 
-  .price{
-    grid-template-columns:1fr;
+  .weekNames{
+
+    display:none;
+  }
+
+  .monthTitle{
+
+    font-size:28px;
   }
 
 }
@@ -162,71 +209,43 @@ button:hover{
 
 <body>
 
-<header>
-가위캡틴 CRM PRO
-</header>
+<div class="wrapper">
 
-<div class="container">
+<div class="calendarBox">
 
-<div class="section">
+<div class="topBar">
 
-<h2>📅 월 캘린더</h2>
+<div class="monthTitle" id="monthTitle">
+2026.05
+</div>
+
+<div class="menuBtns">
+
+<button>일간</button>
+
+<button>주간</button>
+
+<button>월간</button>
+
+<button>연간</button>
+
+</div>
+
+</div>
+
+<div class="weekNames">
+
+<div>일</div>
+<div>월</div>
+<div>화</div>
+<div>수</div>
+<div>목</div>
+<div>금</div>
+<div>토</div>
+
+</div>
 
 <div id="calendar" class="calendar"></div>
-
-</div>
-
-<div class="section">
-
-<h2>📝 고객 / 판매 등록</h2>
-
-<input type="date" id="saleDate">
-
-<input type="text" id="name" placeholder="고객명">
-
-<input type="text" id="shop" placeholder="매장명">
-
-<input type="text" id="phone" placeholder="전화번호">
-
-<input type="text" id="product" placeholder="제품명">
-
-<div class="price">
-
-<input type="number" id="consumerPrice" placeholder="소비자가">
-
-<input type="number" id="sellPrice" placeholder="실판매가">
-
-<input type="number" id="costPrice" placeholder="원가">
-
-<input type="number" id="margin" placeholder="마진" readonly>
-
-</div>
-
-<textarea
-id="memo"
-rows="4"
-placeholder="메모 / 결제방식 / 수리요청 / 특이사항">
-</textarea>
-
-<button onclick="saveCustomer()">
-저장하기
-</button>
-
-</div>
-
-<div class="section">
-
-<h2>🔍 고객 검색</h2>
-
-<input
-type="text"
-id="search"
-class="search"
-placeholder="고객명 / 매장명 / 전화번호 검색"
-onkeyup="render()"
->
-
-<div id="customerList"></div>
 
 </div>
 
@@ -234,318 +253,129 @@ onkeyup="render()"
 
 <script>
 
-let customers =
-JSON.parse(localStorage.getItem("customers") || "[]");
+const events = {
 
-let editIndex = -1;
+  1:[
+    {
+      text:"노동절",
+      holiday:true
+    }
+  ],
 
-document
-.getElementById("sellPrice")
-.addEventListener("input", calcMargin);
+  5:[
+    {
+      text:"어린이날",
+      holiday:true
+    },
+    {
+      text:"김원장 방문"
+    }
+  ],
 
-document
-.getElementById("costPrice")
-.addEventListener("input", calcMargin);
+  8:[
+    {
+      text:"오늘",
+    }
+  ],
 
-function calcMargin(){
+  15:[
+    {
+      text:"베델 연사"
+    }
+  ],
 
-  const sell =
-    Number(
-      document.getElementById("sellPrice").value
-    );
+  21:[
+    {
+      text:"AS 예약"
+    }
+  ],
 
-  const cost =
-    Number(
-      document.getElementById("costPrice").value
-    );
+  25:[
+    {
+      text:"대체공휴일",
+      holiday:true
+    }
+  ]
 
-  document.getElementById("margin").value =
-    sell - cost;
-}
+};
 
-function saveCustomer(){
+const calendar =
+document.getElementById("calendar");
 
-  const customer = {
+const now = new Date();
 
-    saleDate:
-      document.getElementById("saleDate").value,
+const year =
+now.getFullYear();
 
-    name:
-      document.getElementById("name").value,
+const month =
+now.getMonth();
 
-    shop:
-      document.getElementById("shop").value,
+const today =
+now.getDate();
 
-    phone:
-      document.getElementById("phone").value,
+const lastDay =
+new Date(year, month+1, 0).getDate();
 
-    product:
-      document.getElementById("product").value,
+document.getElementById("monthTitle")
+.innerText =
+`${year}.${String(month+1).padStart(2,'0')}`;
 
-    consumerPrice:
-      document.getElementById("consumerPrice").value,
+for(let i=1; i<=lastDay; i++){
 
-    sellPrice:
-      document.getElementById("sellPrice").value,
+  const date =
+  new Date(year, month, i);
 
-    costPrice:
-      document.getElementById("costPrice").value,
+  const day =
+  date.getDay();
 
-    margin:
-      document.getElementById("margin").value,
+  let className = "day";
 
-    memo:
-      document.getElementById("memo").value
-  };
+  if(i === today){
 
-  if(editIndex === -1){
-
-    customers.push(customer);
-
-  }else{
-
-    customers[editIndex] = customer;
-
-    editIndex = -1;
+    className += " today";
   }
 
-  localStorage.setItem(
-    "customers",
-    JSON.stringify(customers)
-  );
+  if(day === 0){
 
-  clearForm();
-
-  render();
-
-  createCalendar();
-}
-
-function clearForm(){
-
-  document.getElementById("saleDate").value = "";
-  document.getElementById("name").value = "";
-  document.getElementById("shop").value = "";
-  document.getElementById("phone").value = "";
-  document.getElementById("product").value = "";
-  document.getElementById("consumerPrice").value = "";
-  document.getElementById("sellPrice").value = "";
-  document.getElementById("costPrice").value = "";
-  document.getElementById("margin").value = "";
-  document.getElementById("memo").value = "";
-}
-
-function render(){
-
-  const keyword =
-    document.getElementById("search")
-    .value
-    .toLowerCase();
-
-  const list =
-    document.getElementById("customerList");
-
-  list.innerHTML = "";
-
-  customers.forEach((c, i)=>{
-
-    const target =
-      (
-        c.name +
-        c.shop +
-        c.phone
-      ).toLowerCase();
-
-    if(!target.includes(keyword)) return;
-
-    list.innerHTML += `
-
-    <div class="card">
-
-      <div class="topInfo">
-
-        <div>
-
-          <h3>${c.name}</h3>
-
-          <div class="small">
-          ${c.saleDate}
-          </div>
-
-        </div>
-
-      </div>
-
-      <p><b>매장명</b> : ${c.shop}</p>
-
-      <p><b>전화번호</b> : ${c.phone}</p>
-
-      <p><b>제품</b> : ${c.product}</p>
-
-      <div class="price">
-
-        <div>
-        소비자가<br>
-        <b>${c.consumerPrice}</b>
-        </div>
-
-        <div>
-        실판매가<br>
-        <b>${c.sellPrice}</b>
-        </div>
-
-        <div>
-        원가<br>
-        <b>${c.costPrice}</b>
-        </div>
-
-        <div>
-        마진<br>
-        <b>${c.margin}</b>
-        </div>
-
-      </div>
-
-      <div class="memo">
-      ${c.memo}
-      </div>
-
-      <div class="actions">
-
-        <button
-        class="editBtn"
-        onclick="editCustomer(${i})">
-        수정
-        </button>
-
-        <button
-        class="deleteBtn"
-        onclick="deleteCustomer(${i})">
-        삭제
-        </button>
-
-      </div>
-
-    </div>
-    `;
-  });
-}
-
-function editCustomer(i){
-
-  const c = customers[i];
-
-  document.getElementById("saleDate").value =
-    c.saleDate;
-
-  document.getElementById("name").value =
-    c.name;
-
-  document.getElementById("shop").value =
-    c.shop;
-
-  document.getElementById("phone").value =
-    c.phone;
-
-  document.getElementById("product").value =
-    c.product;
-
-  document.getElementById("consumerPrice").value =
-    c.consumerPrice;
-
-  document.getElementById("sellPrice").value =
-    c.sellPrice;
-
-  document.getElementById("costPrice").value =
-    c.costPrice;
-
-  document.getElementById("margin").value =
-    c.margin;
-
-  document.getElementById("memo").value =
-    c.memo;
-
-  editIndex = i;
-}
-
-function deleteCustomer(i){
-
-  if(confirm("삭제할까요?")){
-
-    customers.splice(i,1);
-
-    localStorage.setItem(
-      "customers",
-      JSON.stringify(customers)
-    );
-
-    render();
-
-    createCalendar();
+    className += " sunday";
   }
-}
 
-function createCalendar(){
+  if(day === 6){
 
-  const calendar =
-    document.getElementById("calendar");
+    className += " saturday";
+  }
 
-  calendar.innerHTML = "";
+  let eventHtml = "";
 
-  const now = new Date();
+  if(events[i]){
 
-  const year = now.getFullYear();
+    events[i].forEach(e=>{
 
-  const month = now.getMonth();
+      eventHtml += `
 
-  const lastDay =
-    new Date(year, month + 1, 0).getDate();
+      <div class="event
+      ${e.holiday ? 'holiday' : ''}">
 
-  const today =
-    now.getDate();
+      ${e.text}
 
-  for(let i=1; i<=lastDay; i++){
-
-    let events = "";
-
-    customers.forEach(c=>{
-
-      if(!c.saleDate) return;
-
-      const d =
-        new Date(c.saleDate);
-
-      if(d.getDate() === i &&
-         d.getMonth() === month){
-
-        events += `
-        <div class="event">
-        ${c.name}
-        </div>
-        `;
-      }
-
+      </div>
+      `;
     });
-
-    calendar.innerHTML += `
-
-    <div class="day
-    ${today === i ? 'today' : ''}">
-
-      <div class="dayNumber">
-      ${i}
-      </div>
-
-      ${events}
-
-    </div>
-    `;
   }
+
+  calendar.innerHTML += `
+
+  <div class="${className}">
+
+    <div class="dayNumber">
+    ${i}
+    </div>
+
+    ${eventHtml}
+
+  </div>
+  `;
 }
-
-render();
-
-createCalendar();
 
 </script>
 
