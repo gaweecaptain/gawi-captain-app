@@ -3,381 +3,94 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>가위캡틴 캘린더</title>
-
-<style>
-
-*{
-  box-sizing:border-box;
-}
-
-body{
-  margin:0;
-  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
-  background:url('https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?q=80&w=2070&auto=format&fit=crop') center/cover no-repeat fixed;
-  min-height:100vh;
-  padding:30px;
-  color:white;
-}
-
-.wrapper{
-  max-width:900px;
-  margin:auto;
-}
-
-.calendarBox{
-
-  backdrop-filter:blur(20px);
-
-  background:rgba(15,23,42,0.55);
-
-  border:1px solid rgba(255,255,255,0.15);
-
-  border-radius:35px;
-
-  padding:25px;
-
-  box-shadow:
-  0 8px 30px rgba(0,0,0,0.35);
-}
-
-.topBar{
-
-  display:flex;
-
-  justify-content:space-between;
-
-  align-items:center;
-
-  margin-bottom:20px;
-}
-
-.monthTitle{
-
-  font-size:36px;
-
-  font-weight:700;
-
-  letter-spacing:-1px;
-}
-
-.menuBtns{
-
-  display:flex;
-
-  gap:10px;
-}
-
-.menuBtns button{
-
-  background:rgba(255,255,255,0.15);
-
-  border:none;
-
-  color:white;
-
-  padding:10px 15px;
-
-  border-radius:15px;
-
-  cursor:pointer;
-
-  font-weight:600;
-}
-
-.menuBtns button:hover{
-
-  background:rgba(255,255,255,0.25);
-}
-
-.weekNames{
-
-  display:grid;
-
-  grid-template-columns:repeat(7,1fr);
-
-  margin-bottom:10px;
-
-  opacity:0.8;
-
-  text-align:center;
-
-  font-weight:600;
-}
-
-.calendar{
-
-  display:grid;
-
-  grid-template-columns:repeat(7,1fr);
-
-  gap:10px;
-}
-
-.day{
-
-  min-height:120px;
-
-  padding:10px;
-
-  border-radius:20px;
-
-  background:rgba(255,255,255,0.05);
-
-  position:relative;
-
-  transition:0.2s;
-}
-
-.day:hover{
-
-  transform:translateY(-3px);
-
-  background:rgba(255,255,255,0.08);
-}
-
-.dayNumber{
-
-  font-size:18px;
-
-  font-weight:700;
-
-  margin-bottom:8px;
-}
-
-.today{
-
-  border:2px solid white;
-}
-
-.sunday .dayNumber{
-
-  color:#ff8a8a;
-}
-
-.saturday .dayNumber{
-
-  color:#8ab4ff;
-}
-
-.event{
-
-  background:rgba(255,255,255,0.18);
-
-  border-radius:10px;
-
-  padding:4px 7px;
-
-  margin-top:5px;
-
-  font-size:12px;
-
-  white-space:nowrap;
-
-  overflow:hidden;
-
-  text-overflow:ellipsis;
-}
-
-.holiday{
-
-  background:#ff6b6b;
-}
-
-@media(max-width:700px){
-
-  .calendar{
-
-    grid-template-columns:repeat(2,1fr);
-  }
-
-  .weekNames{
-
-    display:none;
-  }
-
-  .monthTitle{
-
-    font-size:28px;
-  }
-
-}
-
-</style>
+<title>가위캡틴 영업 다이어리</title>
+<link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
-<div class="wrapper">
-
-<div class="calendarBox">
-
-<div class="topBar">
-
-<div class="monthTitle" id="monthTitle">
-2026.05
-</div>
-
-<div class="menuBtns">
-
-<button>일간</button>
-
-<button>주간</button>
-
-<button>월간</button>
-
-<button>연간</button>
-
-</div>
-
-</div>
-
-<div class="weekNames">
-
-<div>일</div>
-<div>월</div>
-<div>화</div>
-<div>수</div>
-<div>목</div>
-<div>금</div>
-<div>토</div>
-
-</div>
-
-<div id="calendar" class="calendar"></div>
-
-</div>
-
-</div>
-
-<script>
-
-const events = {
-
-  1:[
-    {
-      text:"노동절",
-      holiday:true
-    }
-  ],
-
-  5:[
-    {
-      text:"어린이날",
-      holiday:true
-    },
-    {
-      text:"김원장 방문"
-    }
-  ],
-
-  8:[
-    {
-      text:"오늘",
-    }
-  ],
-
-  15:[
-    {
-      text:"베델 연사"
-    }
-  ],
-
-  21:[
-    {
-      text:"AS 예약"
-    }
-  ],
-
-  25:[
-    {
-      text:"대체공휴일",
-      holiday:true
-    }
-  ]
-
-};
-
-const calendar =
-document.getElementById("calendar");
-
-const now = new Date();
-
-const year =
-now.getFullYear();
-
-const month =
-now.getMonth();
-
-const today =
-now.getDate();
-
-const lastDay =
-new Date(year, month+1, 0).getDate();
-
-document.getElementById("monthTitle")
-.innerText =
-`${year}.${String(month+1).padStart(2,'0')}`;
-
-for(let i=1; i<=lastDay; i++){
-
-  const date =
-  new Date(year, month, i);
-
-  const day =
-  date.getDay();
-
-  let className = "day";
-
-  if(i === today){
-
-    className += " today";
-  }
-
-  if(day === 0){
-
-    className += " sunday";
-  }
-
-  if(day === 6){
-
-    className += " saturday";
-  }
-
-  let eventHtml = "";
-
-  if(events[i]){
-
-    events[i].forEach(e=>{
-
-      eventHtml += `
-
-      <div class="event
-      ${e.holiday ? 'holiday' : ''}">
-
-      ${e.text}
-
-      </div>
-      `;
-    });
-  }
-
-  calendar.innerHTML += `
-
-  <div class="${className}">
-
-    <div class="dayNumber">
-    ${i}
-    </div>
-
-    ${eventHtml}
-
+<header class="top-header">
+  <div class="logo">✂️ 가위캡틴 CRM</div>
+  <div class="month-nav">
+    <button>◀</button>
+    <h1>2026.04</h1>
+    <button>▶</button>
   </div>
-  `;
-}
+</header>
 
-</script>
+<nav class="tabs">
+  <button class="active">다이어리</button>
+  <button onclick="location.href='customer.html'">고객관리</button>
+</nav>
+
+<section class="calendar-section">
+  <div class="weekdays">
+    <div>일</div><div>월</div><div>화</div><div>수</div><div>목</div><div>금</div><div>토</div>
+  </div>
+
+  <div class="calendar-grid">
+    <div class="day"><span>1</span></div>
+    <div class="day selected">
+      <span>2</span>
+      <small>준오헤어 방문</small>
+    </div>
+    <div class="day"><span>3</span></div>
+    <div class="day"><span>4</span></div>
+    <div class="day"><span>5</span></div>
+    <div class="day"><span>6</span></div>
+    <div class="day"><span>7</span></div>
+    <div class="day"><span>8</span></div>
+    <div class="day"><span>9</span></div>
+    <div class="day"><span>10</span></div>
+    <div class="day"><span>11</span></div>
+  </div>
+</section>
+
+<section class="card">
+  <h2>📌 오늘 해야 할 일</h2>
+
+  <div class="todo-item purple">
+    <div>
+      <strong>준오헤어 강남역점</strong>
+      <p>오전 10:30 / 서울 서초구 강남대로</p>
+    </div>
+  </div>
+
+  <div class="todo-item blue">
+    <div>
+      <strong>기념식 참석</strong>
+      <p>오후 7:00</p>
+    </div>
+  </div>
+</section>
+
+<section class="card">
+  <h2>🎯 오늘 의무 방문 고객 5명</h2>
+
+  <div class="customer-item">
+    <div>
+      <strong>청담헤어</strong>
+      <p>010-1111-2222</p>
+    </div>
+    <input type="checkbox">
+  </div>
+
+  <div class="customer-item">
+    <div>
+      <strong>에이블샵</strong>
+      <p>010-3333-4444</p>
+    </div>
+    <input type="checkbox">
+  </div>
+
+  <div class="customer-item">
+    <div>
+      <strong>박원장</strong>
+      <p>010-5555-6666</p>
+    </div>
+    <input type="checkbox">
+  </div>
+
+</section>
 
 </body>
 </html>
